@@ -1,36 +1,51 @@
 from imageHandler import ImageHandler
 
+
 class Application:
-    def __init__(self):
-        self.configure()
+    def __init__(self, database_dir='database'):
+        self.__database__ = database_dir
+        self.__image_handler__ = ImageHandler(database_dir='database')
+        self._configure()
 
-
-    def configure():
-        self.__boxes_count__ = 1
-        self.__unselected_box_color = (0, 255, 0)
-        self.__selected_box_color = (255, 0, 0)
-
+    def _configure(self, config_file='jisen.config'):
         with open(config_file, 'r') as configFile:
             for line in configFile:
                 try:
                     key, value = line.split(' = ', 1)
                     if key == 'boxes_count':
-                        self.__boxes_count__ = int(value)
+                        __boxes_count__ = int(value)
                     elif key == 'unselected_box_color':
-                        self.__unselected_box_color__ = tuple(int(value.split(',',2)))
+                        __unselected_box_color__ = tuple([int(element) for element in value.split(',', 2)])
                     elif key == 'selected_box_color':
-                        self.__selected_box_color__ = tuple(int(value.split(',',2)))
+                        __selected_box_color__ = tuple([int(element) for element in value.split(',', 2)])
                     else:
                         pass
                 except:
                     pass
-        self__show_config__() 
-        self.__image_handler__ = ImageHandler()
+        self.__image_handler__.setBoxes([])
+        self.__image_handler__.set_selected_box_color(__selected_box_color__)
+        self.__image_handler__.set_unselected_box_color(__unselected_box_color__)
+        for i in range(__boxes_count__):
+            self.__image_handler__.addBox([0, 0, 10, 10])
 
+        self._show_config()
 
+    def _reset_config_file(self, config_file='jisen.config'):
+        with open(config_file, 'w') as configFile:
+            configFile.writelines([
+                'boxes_count = 2\n',
+                'unselected_box_color = 0,255,0\n',
+                'selected_box_color = 255,0,0\n'
+            ])
+        configFile.close()
+        self._configure(config_file)
+        return
 
-    def __show_config__(self):
-        print('Boxes Count', self.__boxes_count__)
-        print('Unselected Box Color', self.__unselected_box_color__)
-        print('Selected Box Color', self.__selected_box_color__)
+    def _show(self):
+        self.__image_handler__.show()
+
+    def _show_config(self):
+        print('Boxes Count', self.__image_handler__.boxCount())
+        print('Unselected Box Color', self.__image_handler__.__unselected_box_color__)
+        print('Selected Box Color', self.__image_handler__.__selected_box_color__)
         return

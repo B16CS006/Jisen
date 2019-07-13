@@ -1,33 +1,87 @@
-import pytesseract, numpy as np, cv2
-from PIL import Image
+import cv2
+import numpy as np
+
 import basic_functions
 from boxes import Boxes
 
-class Handler(Boxes):
-    def __init__(self, database_dir='database', boxes=[[0,0,10,10],[10,10,10,10]], rate=2):
+
+def show_image(image, title='showImage'):
+    cv2.imshow(title, image)
+    cv2.waitKey(0)
+    return
+
+
+def destroy():
+    cv2.destroyAllWindows()
+    return
+
+
+class ImageHandler(Boxes):
+    __selected_box__: int
+    __selected_box_color__: tuple
+    __unselected_box_color__: tuple
+
+    def __init__(self, database_dir='database', selected_box_color=(225, 0, 0), unselected_box_color=(0, 255, 0),
+                 boxes=None, rate=2):
+        if boxes is None:
+            boxes = []
+
         Boxes.__init__(self, boxes, rate)
+
+        self.__current_image__ = None
+        self.__selected_box__ = 0
+        self.select_box()
+        self.set_selected_box_color(selected_box_color)
+        self.set_unselected_box_color(unselected_box_color)
         self.__change_database_dir__(database_dir)
         self.change_image('1.jpg')
         return
-   
+
+    def get_selected_box(self):
+        return self.__selected_box__
+
+    def select_box(self, box_number=0):
+        if 0 <= box_number < self.boxCount():
+            self.__selected_box__ = box_number
+
+    def select_next_box(self):
+        if self.boxCount() > 0:
+            if 0 <= self.get_selected_box() < self.boxCount():
+                self.select_box((self.get_selected_box() + 1) % self.boxCount())
+            else:
+                self.select_box(0)
+
+    def set_unselected_box_color(self, color):
+        self.__unselected_box_color__ = color
+
+    def set_selected_box_color(self, color):
+        self.__selected_box_color__ = color
+        return
+
+    def get_unselected_box_color(self):
+        return self.__unselected_box_color__
+
+    def get_selected_box_color(self):
+        return self.__selected_box_color__
+
     def __change_database_dir__(self, database_dir):
         self.__database_dir__ = basic_functions.check_dir(database_dir)
         return
-    
+
     def __complete_filename__(self, filename):
         return self.__database_dir__ + filename
 
-    def originalImage(self):
+    def original_image(self):
         return self.__current_image__
 
     def image(self):
         return self.__current_image__.copy()
 
-    def imageAt(self, position):
+    def image_at_box(self, position):
         x, y = self.getPoint(position)
         length, height = self.getDimen(position)
 
-        return self.originalImage()[x:x+length, y:y+height].copy()
+        return self.original_image()[x:x + length, y:y + height].copy()
 
     def change_image(self, image_name, from_database=True):
         if from_database:
@@ -37,22 +91,16 @@ class Handler(Boxes):
 
     def show(self, title='image'):
         image = self.image()
-        self.draw(image)
-        cv2.imshow(title, image)
-        cv2.waitKey(0)
+        self.drawBoxes(image)
+        show_image(image, title)
         return
 
-    def showImage(self, image, title='showImage'):
-        cv2.imshow(title, image)
-        cv2.waitKey(0)
-        return
-
-    def destroy(self):
-        cv2.destroyAllWindows()
-        return
-
-    def draw(self, img):
+    def drawBoxes(self, img):
         for i in range(self.boxCount()):
             pt = self.getPoint(i)
             dim = self.getDimen(i)
-            cv2.rectangle(img, pt, tuple(np.array(pt) + np.array(dim)), (255,0,0), 3)       
+            if i == self.get_selected_box():
+                color = self.get_selected_box_color()
+            else:
+                color = self.get_unselected_box_color()
+            cv2.rectangle(img, pt, tuple(np.array(pt) + np.array(dim)), color, self.getBoxWidth())
