@@ -18,6 +18,11 @@ class Application:
                         __unselected_box_color__ = tuple([int(element) for element in value.split(',', 2)])
                     elif key == 'selected_box_color':
                         __selected_box_color__ = tuple([int(element) for element in value.split(',', 2)])
+                    elif key == 'boxes':
+                        value = [box_value for box_value in value.split(',')]
+                        __boxes__ = []
+                        for box_value in value:
+                            __boxes__.append([int(element) for element in box_value.split(';', 3)])
                     else:
                         pass
                 except:
@@ -26,7 +31,7 @@ class Application:
         self.__image_handler__.set_selected_box_color(__selected_box_color__)
         self.__image_handler__.set_unselected_box_color(__unselected_box_color__)
         for i in range(__boxes_count__):
-            self.__image_handler__.addBox([0, 0, 10, 10])
+            self.__image_handler__.addBox(__boxes__[i])
 
         self._show_config()
 

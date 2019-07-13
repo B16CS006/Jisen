@@ -7,7 +7,7 @@ class Boxes:
             boxes = []
         self.__boxes__ = boxes
         self.setBoxWidth(2)
-        self.rate = rate
+        self.setRate(rate)
         return
 
     def getBoxWidth(self):
@@ -46,7 +46,7 @@ class Boxes:
         return
 
     def decRate(self, value=1):
-        self.__rate__ += value
+        self.__rate__ -= value
         return
 
     def getBox(self, position):
@@ -87,48 +87,48 @@ class Boxes:
 
     def incX(self, position, by=None):
         if by is None:
-            by = self.rate
+            by = self.getRate()
         old_value, _ = self.getPoint(position)
         self.setPoint(position, old_value + by, None)
 
     def decX(self, position, by=None):
         if by is None:
-            by = self.rate
+            by = self.getRate()
         old_value, _ = self.getPoint(position)
         self.setPoint(position, old_value - by, None)
 
     def incY(self, position, by=None):
         if by is None:
-            by = self.rate
+            by = self.getRate()
         _, old_value = self.getPoint(position)
         self.setPoint(position, None, old_value + by)
 
     def decY(self, position, by=None):
         if by is None:
-            by = self.rate
+            by = self.getRate()
         _, old_value = self.getPoint(position)
         self.setPoint(position, None, old_value - by)
 
     def incLength(self, position, by=None):
         if by is None:
-            by = self.rate
+            by = self.getRate()
         old_value, _ = self.getDimen(position)
         self.setDimen(position, old_value + by, None)
 
     def decLength(self, position, by=None):
         if by is None:
-            by = self.rate
+            by = self.getRate()
         old_value, _ = self.getDimen(position)
         self.setDimen(position, old_value - by, None)
 
     def incHeight(self, position, by=None):
         if by is None:
-            by = self.rate
+            by = self.getRate()
         _, old_value = self.getDimen(position)
         self.setDimen(position, None, old_value + by)
 
     def decHeight(self, position, by=None):
         if by is None:
-            by = self.rate
+            by = self.getRate()
         _, old_value = self.getDimen(position)
         self.setDimen(position, None, old_value - by)

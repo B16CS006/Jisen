@@ -86,7 +86,7 @@ class ImageHandler(Boxes):
     def change_image(self, image_name, from_database=True):
         if from_database:
             image_name = self.__complete_filename__(image_name)
-        self.__current_image__ = cv2.imread(image_name)
+        self.__current_image__ = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
         return
 
     def show(self, title='image'):
