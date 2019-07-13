@@ -95,7 +95,10 @@ class Boxes:
         if by is None:
             by = self.getRate()
         old_value, _ = self.getPoint(position)
-        self.setPoint(position, old_value - by, None)
+        new_value = old_value - by
+        if new_value < 0:
+            new_value = 0
+        self.setPoint(position, new_value, None)
 
     def incY(self, position, by=None):
         if by is None:
@@ -107,7 +110,10 @@ class Boxes:
         if by is None:
             by = self.getRate()
         _, old_value = self.getPoint(position)
-        self.setPoint(position, None, old_value - by)
+        new_value = old_value - by
+        if new_value < 0:
+            new_value = 0
+        self.setPoint(position, None, new_value)
 
     def incLength(self, position, by=None):
         if by is None:
@@ -119,7 +125,10 @@ class Boxes:
         if by is None:
             by = self.getRate()
         old_value, _ = self.getDimen(position)
-        self.setDimen(position, old_value - by, None)
+        new_value = old_value - by
+        if new_value < 0:
+            new_value = 0
+        self.setDimen(position, new_value, None)
 
     def incHeight(self, position, by=None):
         if by is None:
@@ -131,4 +140,7 @@ class Boxes:
         if by is None:
             by = self.getRate()
         _, old_value = self.getDimen(position)
-        self.setDimen(position, None, old_value - by)
+        new_value = old_value - by
+        if new_value < 0:
+            new_value = 0
+        self.setDimen(position, None, new_value)

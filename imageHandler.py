@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from pytesseract import image_to_string
 
 import basic_functions
 from boxes import Boxes
@@ -78,10 +79,8 @@ class ImageHandler(Boxes):
         return self.__current_image__.copy()
 
     def image_at_box(self, position):
-        x, y = self.getPoint(position)
-        length, height = self.getDimen(position)
-
-        return self.original_image()[x:x + length, y:y + height].copy()
+        x, y, length, height = self.getBox(position)
+        return self.original_image()[y:y + height, x:x + length].copy()
 
     def change_image(self, image_name, from_database=True):
         if from_database:
@@ -104,3 +103,13 @@ class ImageHandler(Boxes):
             else:
                 color = self.get_unselected_box_color()
             cv2.rectangle(img, pt, tuple(np.array(pt) + np.array(dim)), color, self.getBoxWidth())
+
+    def read_image(self, image=None):
+        if image is None:
+            image = self.image()
+        elif isinstance(image, int):
+            image = self.image_at_box(image)
+
+        if image is None or isinstance(image, str):
+            return None
+        return image_to_string(image)

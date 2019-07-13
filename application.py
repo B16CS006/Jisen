@@ -32,7 +32,7 @@ class Application:
         self.__image_handler__.set_unselected_box_color(__unselected_box_color__)
         for i in range(__boxes_count__):
             self.__image_handler__.addBox(__boxes__[i])
-
+        self.values = None
         self._show_config()
 
     def _reset_config_file(self, config_file='jisen.config'):
@@ -46,11 +46,14 @@ class Application:
         self._configure(config_file)
         return
 
-    def _show(self):
-        self.__image_handler__.show()
-
     def _show_config(self):
         print('Boxes Count', self.__image_handler__.boxCount())
         print('Unselected Box Color', self.__image_handler__.__unselected_box_color__)
         print('Selected Box Color', self.__image_handler__.__selected_box_color__)
         return
+
+    def _read_image_(self):
+        self.values = []
+        for i in range(self.__image_handler__.boxCount()):
+            self.values.append(self.__image_handler__.read_image(i))
+        # print(self.values)
