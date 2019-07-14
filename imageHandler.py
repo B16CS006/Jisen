@@ -72,7 +72,7 @@ class ImageHandler(Boxes):
     @_image.setter
     def _image(self, image_name):
         if isinstance(image_name, str):
-            self._current_image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
+            self._current_image = cv2.imread(image_name)
         else:
             self._current_image = image_name
 
@@ -122,4 +122,8 @@ class ImageHandler(Boxes):
 
         if image is None or isinstance(image, str):
             return None
+
+        # destroy()
+        # show_image(image, 'Box')
+
         return image_to_string(image)
