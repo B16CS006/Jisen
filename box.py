@@ -1,7 +1,8 @@
 # noinspection PyAttributeOutsideInit
 class Box:
-    def __init__(self, x=None, y=None, length=None, height=None, label=''):
-        self.box = (x, y, length, height)
+    def __init__(self, box, label=''):
+        print(type(box))
+        self.box = box
         self.label = label
 
     @property
@@ -58,10 +59,12 @@ class Box:
         if not isinstance(height, int) or height < 0:
             self.__height__ = 0
         else:
-            self.height = height
+            self.__height__ = height
 
     @label.setter
     def label(self, label):
+        if label is None:
+            label = ''
         self.__label__ = str(label)
 
     @point.setter
