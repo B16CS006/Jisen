@@ -65,6 +65,7 @@ class Window(QtWidgets.QWidget, application.Application):
         self.show()
 
     def ui_components(self):
+        self.image_show = QLabel(self)
         self.ui_image_control()
         self.image_control_box.setLayout(self.main_grid_layout)
 
@@ -203,13 +204,14 @@ class Window(QtWidgets.QWidget, application.Application):
         self.main_control_layout.addWidget(read_button)
 
     def set_image(self, image=None):
-        image_show = QLabel(self)
-        self.main_grid_layout.addWidget(image_show, 0, 1)
+        self.main_grid_layout.addWidget(self.image_show, 0, 1)
         if image is None:
             image = self.image_handler.get_image()
             if image is None:
-                image_show.setText('No Image Found')
+                self.image_show.setText('No Image Found')
                 return
+            else:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         elif isinstance(image, str):
             image = cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB)
 
@@ -217,7 +219,7 @@ class Window(QtWidgets.QWidget, application.Application):
             self.image_handler.draw_boxes(image)
 
         image = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
-        image_show.setPixmap(QPixmap.fromImage(image))
+        self.image_show.setPixmap(QPixmap.fromImage(image))
 
     def ui_correct_if_incorrect_dialog(self):
         self.dialog = QDialog(self)
