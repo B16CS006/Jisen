@@ -1,9 +1,8 @@
 # noinspection PyAttributeOutsideInit
 class Box:
     def __init__(self, box, label=''):
-        print(type(box))
-        self.box = box
         self.label = label
+        self.box = box
 
     @property
     def x(self):
@@ -134,3 +133,35 @@ class Box:
             pass
 
     box = property(get_box, set_box)
+
+    def inc_x(self, by):
+        if isinstance(by, int):
+            self.x += by
+
+    def inc_y(self, by):
+        if isinstance(by, int):
+            self.y += by
+
+    def inc_length(self, by):
+        if isinstance(by, int):
+            self.length += by
+
+    def inc_height(self, by):
+        if isinstance(by, int):
+            self.height += by
+
+    def dec_x(self, by):
+        if isinstance(by, int):
+            self.x -= by
+
+    def dec_y(self, by):
+        if isinstance(by, int):
+            self.y -= by
+
+    def dec_length(self, by):
+        if isinstance(by, int):
+            self.length -= by
+
+    def dec_height(self, by):
+        if isinstance(by, int):
+            self.height -= by
