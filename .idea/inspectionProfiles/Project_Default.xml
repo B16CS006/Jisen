@@ -5,6 +5,7 @@
       <option name="ignoredErrors">
         <list>
           <option value="E266" />
+          <option value="E722" />
         </list>
       </option>
     </inspection_tool>
@@ -26,6 +27,9 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="PyQt5.QtWidgets.clicked.connect" />
+          <option value="PyQt5.QtWidgets.stateChanged.*" />
+          <option value="PyQt5.QtWidgets.accepted.*" />
+          <option value="PyQt5.QtWidgets.rejected.*" />
         </list>
       </option>
     </inspection_tool>

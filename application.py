@@ -12,6 +12,7 @@ class Application:
             for line in configFile:
                 try:
                     key, value = line.split(' = ', 1)
+                    print(key, value)
                     if key == 'boxes_count':
                         __boxes_count__ = int(value)
                     elif key == 'unselected_box_color':
@@ -27,6 +28,7 @@ class Application:
                         pass
                 except:
                     pass
+
         self.image_handler.boxes = []
         self.image_handler.selected_box_color = __selected_box_color__
         self.image_handler.unselected_box_color = __unselected_box_color__
@@ -73,7 +75,7 @@ class Application:
         print('Selected Box Color', self.image_handler.selected_box_color)
         return
 
-    def _read_image_(self):
+    def _read_box_images(self):
         self.values = []
         for i in range(self.image_handler.boxCount()):
             self.values.append(self.image_handler.read_image(i))

@@ -17,14 +17,45 @@ class Window(QtWidgets.QWidget, application.Application):
         super(Window, self).__init__()
         application.Application.__init__(self, 'database')
 
-        self.show_boxes = True
         self.boxes_visibility = True
-        self.is_ctrl_is_pressed = False
+        self.ctrl_pressed = False
         self.wants_to_confirm_reads = False
         self.main_grid_layout = QGridLayout()
         self.image_control_box = QGroupBox('Image Control Box')
-        self.image_show = QLabel(self)
         self.init_window()
+
+    @property
+    def boxes_visibility(self):
+        return self._boxes_visibility
+
+    @boxes_visibility.setter
+    def boxes_visibility(self, visibility):
+        if isinstance(visibility, bool):
+            self._boxes_visibility = visibility
+        else:
+            self._boxes_visibility = True
+
+    @property
+    def is_ctrl_pressed(self):
+        return self._ctrl_pressed
+
+    @is_ctrl_pressed.setter
+    def is_ctrl_pressed(self, value):
+        if isinstance(value, bool):
+            self._ctrl_pressed = value
+        else:
+            self._ctrl_pressed = False
+
+    @property
+    def wants_to_confirm_reads(self):
+        return self._wants_to_confirm_reads
+
+    @wants_to_confirm_reads.setter
+    def wants_to_confirm_reads(self, value):
+        if isinstance(value, bool):
+            self._wants_to_confirm_reads = value
+        else:
+            self._wants_to_confirm_reads = False
 
     def init_window(self):
         self.setWindowIcon(QtGui.QIcon('configuration/Logo.jpeg'))
@@ -172,20 +203,22 @@ class Window(QtWidgets.QWidget, application.Application):
         self.main_control_layout.addWidget(read_button)
 
     def set_image(self, image=None):
-        self.main_grid_layout.addWidget(self.image_show, 0, 1)
+        print('set Image')
+        image_show = QLabel(self)
+        self.main_grid_layout.addWidget(image_show, 0, 1)
         if image is None:
-            image = self.__image_handler__.image()
+            image = self.image_handler.get_image()
             if image is None:
-                self.image_show.setText('No Image Found')
+                image_show.setText('No Image Found')
                 return
         elif isinstance(image, str):
             image = cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB)
 
         if self.boxes_visibility:
-            self.__image_handler__.drawBoxes(image)
+            self.image_handler.draw_boxes(image)
 
         image = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
-        self.image_show.setPixmap(QPixmap.fromImage(image))
+        image_show.setPixmap(QPixmap.fromImage(image))
 
     def ui_correct_if_incorrect_dialog(self):
         self.dialog = QDialog(self)
@@ -195,7 +228,7 @@ class Window(QtWidgets.QWidget, application.Application):
         self.lines = []
         v_box_layout = QVBoxLayout()
 
-        for i in range(self.__image_handler__.boxCount()):
+        for i in range(self.image_handler.boxCount()):
             line = QLineEdit()
             line.setText(self.values[i])
             self.lines.append(line)
@@ -231,9 +264,9 @@ class Window(QtWidgets.QWidget, application.Application):
         elif q_key_event.key() == Qt.Key_N:
             self.select_next_box()
         elif q_key_event.key() == Qt.Key_Control:
-            self.is_ctrl_is_pressed = True
+            self.ctrl_pressed = True
         elif q_key_event.key() == Qt.Key_Q:
-            if self.is_ctrl_is_pressed:
+            if self.ctrl_pressed:
                 sys.exit('Quit')
         elif q_key_event.key() == Qt.Key_Minus:
             self.slider.setValue(self.slider.value() - 1)
@@ -245,12 +278,12 @@ class Window(QtWidgets.QWidget, application.Application):
 
     def keyReleaseEvent(self, q_key_event):
         if q_key_event.key() == Qt.Key_Control:
-            self.is_ctrl_is_pressed = False
+            self.ctrl_pressed = False
         super().keyReleaseEvent(q_key_event)
     ################################################## Button functioning ##########################
 
     def change_box_rate(self, value):
-        self.__image_handler__.setRate(value)
+        self.image_handler.rate = value
         self.slider_value.setText(str(self.slider.value()))
 
     def set_boxes_visibility(self, state):
@@ -261,42 +294,42 @@ class Window(QtWidgets.QWidget, application.Application):
             self.boxes_visibility = False
             self.set_image()
 
-        print(self.__image_handler__.getBoxes())
+        print(self.image_handler.boxes)
 
     def select_next_box(self):
-        self.__image_handler__.select_next_box()
+        self.image_handler.select_next_box()
         self.set_image()
 
     def move_box_left(self):
-        self.__image_handler__.decX(self.__image_handler__.get_selected_box())
+        self.image_handler.decX(self.image_handler.selected_box)
         self.set_image()
 
     def move_box_right(self):
-        self.__image_handler__.incX(self.__image_handler__.get_selected_box())
+        self.image_handler.incX(self.image_handler.selected_box)
         self.set_image()
 
     def move_box_up(self):
-        self.__image_handler__.decY(self.__image_handler__.get_selected_box())
+        self.image_handler.decY(self.image_handler.selected_box)
         self.set_image()
 
     def move_box_down(self):
-        self.__image_handler__.incY(self.__image_handler__.get_selected_box())
+        self.image_handler.incY(self.image_handler.selected_box)
         self.set_image()
 
     def inc_box_length(self):
-        self.__image_handler__.incLength(self.__image_handler__.get_selected_box())
+        self.image_handler.incLength(self.image_handler.selected_box)
         self.set_image()
 
     def dec_box_length(self):
-        self.__image_handler__.decLength(self.__image_handler__.get_selected_box())
+        self.image_handler.decLength(self.image_handler.selected_box)
         self.set_image()
 
     def inc_box_height(self):
-        self.__image_handler__.incHeight(self.__image_handler__.get_selected_box())
+        self.image_handler.incHeight(self.image_handler.selected_box)
         self.set_image()
 
     def dec_box_height(self):
-        self.__image_handler__.decHeight(self.__image_handler__.get_selected_box())
+        self.image_handler.decHeight(self.image_handler.selected_box)
         self.set_image()
 
     def set_wants_to_confirm_reads(self, state):
@@ -306,14 +339,14 @@ class Window(QtWidgets.QWidget, application.Application):
             self.wants_to_confirm_reads = False
 
     def read_images(self):
-        self._read_image_()
+        self._read_box_images()
         if self.wants_to_confirm_reads:
             self.ui_correct_if_incorrect_dialog()
         print(self.values)
 
     def update_read_image_value(self):
         self.dialog.close()
-        for i in range(self.__image_handler__.boxCount()):
+        for i in range(self.image_handler.boxCount()):
             self.values[i] = self.lines[i].text()
 
 

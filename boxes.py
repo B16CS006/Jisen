@@ -4,7 +4,7 @@ from box import Box
 class Boxes:
 
     def __init__(self, rate=2, box_width=2):
-        self._boxes = []
+        self.boxes = []
         self.box_width = box_width
         self.rate = rate
 
@@ -24,7 +24,7 @@ class Boxes:
             self._rate = rate
 
     def _get_boxes(self):
-        return self._boxes.copy()
+        return self._boxes
 
     def _set_boxes(self, boxes):
         if boxes is None:

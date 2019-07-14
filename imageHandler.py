@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 from pytesseract import image_to_string
 
 import basic_functions
@@ -22,8 +21,7 @@ class ImageHandler(Boxes):
                  rate=2):
 
         Boxes.__init__(self, rate)
-
-        self._selected_box = 0
+        self.selected_box = 0
         self.set_select_box = 0
         self.selected_box_color = selected_box_color
         self.unselected_box_color = unselected_box_color
@@ -38,6 +36,8 @@ class ImageHandler(Boxes):
     def selected_box(self, box_number):
         if 0 <= box_number < self.boxCount():
             self._selected_box = box_number
+        else:
+            self._selected_box = 0
 
     @property
     def unselected_box_color(self):
@@ -71,7 +71,10 @@ class ImageHandler(Boxes):
 
     @_image.setter
     def _image(self, image_name):
-        self._current_image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
+        if isinstance(image_name, str):
+            self._current_image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
+        else:
+            self._current_image = image_name
 
     def get_image(self):
         return self._image.copy()
@@ -94,22 +97,22 @@ class ImageHandler(Boxes):
                 self.selected_box = 0
 
     def __complete_filename__(self, filename):
-        return self.__database_dir__ + filename
+        return self.database_dir + filename
 
     def show_image(self, title='image'):
         image = self.get_image()
-        self.drawBoxes(image)
+        self.draw_boxes(image)
         show_image(image, title)
         return
 
-    def drawBoxes(self, img):
+    def draw_boxes(self, img):
         for i in range(self.boxCount()):
             box = self.getBox(i)
             if i == self.selected_box:
                 color = self.selected_box_color
             else:
                 color = self.unselected_box_color
-            cv2.rectangle(img, box.point, tuple(np.array(box.point) + np.array(box.dimension)), color, self.box_width)
+            cv2.rectangle(img, box.point, (box.x + box.length, box.y + box.height), color, self.box_width)
 
     def read_image(self, image=None):
         if image is None:
