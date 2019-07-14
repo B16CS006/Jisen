@@ -203,7 +203,6 @@ class Window(QtWidgets.QWidget, application.Application):
         self.main_control_layout.addWidget(read_button)
 
     def set_image(self, image=None):
-        print('set Image')
         image_show = QLabel(self)
         self.main_grid_layout.addWidget(image_show, 0, 1)
         if image is None:
@@ -294,7 +293,7 @@ class Window(QtWidgets.QWidget, application.Application):
             self.boxes_visibility = False
             self.set_image()
 
-        print(self.image_handler.boxes)
+        print(self.image_handler.getBox(self.image_handler.selected_box).box)
 
     def select_next_box(self):
         self.image_handler.select_next_box()

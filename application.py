@@ -12,7 +12,6 @@ class Application:
             for line in configFile:
                 try:
                     key, value = line.split(' = ', 1)
-                    print(key, value)
                     if key == 'boxes_count':
                         __boxes_count__ = int(value)
                     elif key == 'unselected_box_color':
