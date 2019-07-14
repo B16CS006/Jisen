@@ -18,95 +18,102 @@ def destroy():
 
 
 class ImageHandler(Boxes):
-    __selected_box__: int
-    __selected_box_color__: tuple
-    __unselected_box_color__: tuple
-
     def __init__(self, database_dir='database', selected_box_color=(225, 0, 0), unselected_box_color=(0, 255, 0),
-                 boxes=None, rate=2):
-        if boxes is None:
-            boxes = []
+                 rate=2):
 
-        Boxes.__init__(self, boxes, rate)
+        Boxes.__init__(self, rate)
 
-        self.__current_image__ = None
-        self.__selected_box__ = 0
-        self.select_box()
-        self.set_selected_box_color(selected_box_color)
-        self.set_unselected_box_color(unselected_box_color)
-        self.__change_database_dir__(database_dir)
-        self.change_image('1.jpg')
-        return
+        self._selected_box = 0
+        self.set_select_box = 0
+        self.selected_box_color = selected_box_color
+        self.unselected_box_color = unselected_box_color
+        self.database_dir = database_dir
+        self.set_image('1.jpg')
 
-    def get_selected_box(self):
-        return self.__selected_box__
+    @property
+    def selected_box(self):
+        return self._selected_box
 
-    def select_box(self, box_number=0):
+    @selected_box.setter
+    def selected_box(self, box_number):
         if 0 <= box_number < self.boxCount():
-            self.__selected_box__ = box_number
+            self._selected_box = box_number
+
+    @property
+    def unselected_box_color(self):
+        return self._unselected_box_color
+
+    @property
+    def selected_box_color(self):
+        return self._selected_box_color
+
+    @unselected_box_color.setter
+    def unselected_box_color(self, color):
+        if isinstance(color, tuple):
+            self._unselected_box_color = color
+
+    @selected_box_color.setter
+    def selected_box_color(self, color):
+        if isinstance(color, tuple):
+            self._selected_box_color = color
+
+    @property
+    def database_dir(self):
+        return self.__database_dir__
+
+    @database_dir.setter
+    def database_dir(self, database_dir):
+        self.__database_dir__ = basic_functions.check_dir(database_dir)
+
+    @property
+    def _image(self):
+        return self._current_image
+
+    @_image.setter
+    def _image(self, image_name):
+        self._current_image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
+
+    def get_image(self):
+        return self._image.copy()
+
+    def set_image(self, image_name, from_database=True):
+        if from_database:
+            image_name = self.__complete_filename__(image_name)
+        self._image = image_name
+
+    def image_at_box(self, position):
+        x, y, length, height = self.getBox(position).box
+        return self._image[y:y + height, x:x + length].copy()
 
     def select_next_box(self):
         if self.boxCount() > 0:
-            if 0 <= self.get_selected_box() < self.boxCount():
-                self.select_box((self.get_selected_box() + 1) % self.boxCount())
+            if 0 <= self.selected_box < self.boxCount():
+                self.selected_box += 1
+                self.selected_box %= self.boxCount()
             else:
-                self.select_box(0)
-
-    def set_unselected_box_color(self, color):
-        self.__unselected_box_color__ = color
-
-    def set_selected_box_color(self, color):
-        self.__selected_box_color__ = color
-        return
-
-    def get_unselected_box_color(self):
-        return self.__unselected_box_color__
-
-    def get_selected_box_color(self):
-        return self.__selected_box_color__
-
-    def __change_database_dir__(self, database_dir):
-        self.__database_dir__ = basic_functions.check_dir(database_dir)
-        return
+                self.selected_box = 0
 
     def __complete_filename__(self, filename):
         return self.__database_dir__ + filename
 
-    def original_image(self):
-        return self.__current_image__
-
-    def image(self):
-        return self.__current_image__.copy()
-
-    def image_at_box(self, position):
-        x, y, length, height = self.getBox(position)
-        return self.original_image()[y:y + height, x:x + length].copy()
-
-    def change_image(self, image_name, from_database=True):
-        if from_database:
-            image_name = self.__complete_filename__(image_name)
-        self.__current_image__ = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
-        return
-
-    def show(self, title='image'):
-        image = self.image()
+    def show_image(self, title='image'):
+        image = self.get_image()
         self.drawBoxes(image)
         show_image(image, title)
         return
 
     def drawBoxes(self, img):
         for i in range(self.boxCount()):
-            pt = self.getPoint(i)
-            dim = self.getDimen(i)
-            if i == self.get_selected_box():
-                color = self.get_selected_box_color()
+            box = self.getBox(i)
+            if i == self.selected_box:
+                color = self.selected_box_color
             else:
-                color = self.get_unselected_box_color()
-            cv2.rectangle(img, pt, tuple(np.array(pt) + np.array(dim)), color, self.getBoxWidth())
+                color = self.unselected_box_color
+            cv2.rectangle(img, box.point, tuple(np.array(box.point) + np.array(box.dimension)), color, self.box_width)
 
     def read_image(self, image=None):
         if image is None:
-            image = self.image()
+            image = self.get_image()
         elif isinstance(image, int):
             image = self.image_at_box(image)
 
