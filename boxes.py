@@ -5,7 +5,7 @@ class Boxes:
 
     def __init__(self, rate=2, box_width=2):
         self._boxes = []
-        self.boxWidth = box_width
+        self.box_width = box_width
         self.rate = rate
 
     def _get_box_width(self):
@@ -33,7 +33,7 @@ class Boxes:
             boxes = []
         self._boxes = boxes
 
-    boxWidth = property(_get_box_width, _set_box_width)
+    box_width = property(_get_box_width, _set_box_width)
     rate = property(_get_rate, _set_rate)
     boxes = property(_get_boxes, _set_boxes)
 
