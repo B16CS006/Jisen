@@ -3,6 +3,9 @@
     <words>
       <w>csvfile</w>
       <w>jisen</w>
+      <w>opencv</w>
+      <w>pytesseract</w>
+      <w>tesseract</w>
     </words>
   </dictionary>
 </component>
