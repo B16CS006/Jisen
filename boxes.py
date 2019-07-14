@@ -1,146 +1,109 @@
-class Boxes:
-    __rate__: int
-    __box_width__: int
+from box import Box
 
-    def __init__(self, boxes=None, rate=2):
+
+class Boxes:
+
+    def __init__(self, rate=2, box_width=2):
+        self._boxes = []
+        self.boxWidth = box_width
+        self.rate = rate
+
+    def _get_box_width(self):
+        return self._box_width
+
+    def _set_box_width(self, width):
+        self._box_width = width
+
+    def _get_rate(self):
+        return self._rate
+
+    def _set_rate(self, rate):
+        if not isinstance(rate, int) or rate <= 0:
+            self._rate = 1
+        else:
+            self._rate = rate
+
+    def _get_boxes(self):
+        return self._boxes.copy()
+
+    def _set_boxes(self, boxes):
         if boxes is None:
             boxes = []
-        self.__boxes__ = boxes
-        self.setBoxWidth(2)
-        self.setRate(rate)
-        return
+        elif not isinstance(boxes, list):
+            boxes = []
+        self._boxes = boxes
 
-    def getBoxWidth(self):
-        return self.__box_width__
-
-    def setBoxWidth(self, width):
-        self.__box_width__ = width
+    boxWidth = property(_get_box_width, _set_box_width)
+    rate = property(_get_rate, _set_rate)
+    boxes = property(_get_boxes, _set_boxes)
 
     def addBox(self, box=None):
         if box is None:
-            box = [0, 0, 0, 0]
-        self.__boxes__.append(box)
-        return
+            box = []
+        self.boxes.append(Box(box))
 
     def boxCount(self):
-        return len(self.__boxes__)
-
-    def getBoxes(self):
-        return self.__boxes__.copy()
-
-    def setBoxes(self, boxes=None):
-        if boxes is None:
-            boxes = []
-        self.__boxes__ = boxes
-        return
-
-    def getRate(self):
-        return self.__rate__
-
-    def setRate(self, rate):
-        self.__rate__ = rate
-        return
+        return len(self._boxes)
 
     def incRate(self, value=1):
-        self.__rate__ += value
+        self.rate += value
         return
 
     def decRate(self, value=1):
-        self.__rate__ -= value
+        self.rate -= value
         return
 
     def getBox(self, position):
         if self.boxCount() > position >= 0:
-            box = self.__boxes__[position]
-            return box[0], box[1], box[2], box[3]
+            return self.boxes[position]
         else:
-            return None, None, None, None
-
-    def getPoint(self, position):
-        x, y, _, _ = self.getBox(position)
-        return x, y
-
-    def getDimen(self, position):
-        _, _, length, height = self.getBox(position)
-        return length, height
+            print('Index Out of Range')
 
     def setBox(self, position, x=None, y=None, length=None, height=None):
-        if x is None:
-            x, _ = self.getPoint(position)
-        if y is None:
-            _, y = self.getPoint(position)
-        if length is None:
-            length, _ = self.getDimen(position)
-        if height is None:
-            _, height = self.getDimen(position)
-
-        self.__boxes__[position] = [x, y, length, height]
-        return
+        self.getBox(position).box = x, y, length, height
 
     def setPoint(self, position, x=None, y=None):
-        self.setBox(position, x, y, None, None)
-        return
+        self.getBox(position).point = x, y
 
     def setDimen(self, position, length=None, height=None):
-        self.setBox(position, None, None, length, height)
-        return
+        self.getBox(position).dimension = length, height
 
     def incX(self, position, by=None):
         if by is None:
-            by = self.getRate()
-        old_value, _ = self.getPoint(position)
-        self.setPoint(position, old_value + by, None)
+            by = self.rate
+        self.getBox(position).inc_x(by)
 
     def decX(self, position, by=None):
         if by is None:
-            by = self.getRate()
-        old_value, _ = self.getPoint(position)
-        new_value = old_value - by
-        if new_value < 0:
-            new_value = 0
-        self.setPoint(position, new_value, None)
+            by = self.rate
+        self.getBox(position).dec_x(by)
 
     def incY(self, position, by=None):
         if by is None:
-            by = self.getRate()
-        _, old_value = self.getPoint(position)
-        self.setPoint(position, None, old_value + by)
+            by = self.rate
+        self.getBox(position).inc_y(by)
 
     def decY(self, position, by=None):
         if by is None:
-            by = self.getRate()
-        _, old_value = self.getPoint(position)
-        new_value = old_value - by
-        if new_value < 0:
-            new_value = 0
-        self.setPoint(position, None, new_value)
+            by = self.rate
+        self.getBox(position).dec_y(by)
 
     def incLength(self, position, by=None):
         if by is None:
-            by = self.getRate()
-        old_value, _ = self.getDimen(position)
-        self.setDimen(position, old_value + by, None)
+            by = self.rate
+        self.getBox(position).inc_length(by)
 
     def decLength(self, position, by=None):
         if by is None:
-            by = self.getRate()
-        old_value, _ = self.getDimen(position)
-        new_value = old_value - by
-        if new_value < 0:
-            new_value = 0
-        self.setDimen(position, new_value, None)
+            by = self.rate
+        self.getBox(position).dec_length(by)
 
     def incHeight(self, position, by=None):
         if by is None:
-            by = self.getRate()
-        _, old_value = self.getDimen(position)
-        self.setDimen(position, None, old_value + by)
+            by = self.rate
+        self.getBox(position).inc_height(by)
 
     def decHeight(self, position, by=None):
         if by is None:
-            by = self.getRate()
-        _, old_value = self.getDimen(position)
-        new_value = old_value - by
-        if new_value < 0:
-            new_value = 0
-        self.setDimen(position, None, new_value)
+            by = self.rate
+        self.getBox(position).dec_height(by)
