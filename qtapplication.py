@@ -213,12 +213,17 @@ class Window(QtWidgets.QWidget, application.Application):
             else:
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         elif isinstance(image, str):
+            # pixmap = QtGui.QPixmap(image).scaledToHeight(700)
             image = cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB)
-
+            # self.image_show.setPixmap(pixmap)
+            # return
+        # print(image, '/////////////////////')
         if self.boxes_visibility:
             self.image_handler.draw_boxes(image)
 
-        image = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
+        # pixmap = (QtGui.QPixmap.fromImage(image))
+        image = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888).scaledToHeight(700)
+
         self.image_show.setPixmap(QPixmap.fromImage(image))
 
     def ui_correct_if_incorrect_dialog(self):

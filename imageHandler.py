@@ -26,7 +26,7 @@ class ImageHandler(Boxes):
         self.selected_box_color = selected_box_color
         self.unselected_box_color = unselected_box_color
         self.database_dir = database_dir
-        self.set_image('1.jpg')
+        self.set_image('2.jpeg')
 
     @property
     def selected_box(self):
@@ -73,11 +73,16 @@ class ImageHandler(Boxes):
     def _image(self, image_name):
         if isinstance(image_name, str):
             self._current_image = cv2.imread(image_name)
+            self._current_image_name = image_name
         else:
-            self._current_image = image_name
+            pass
+            # self._current_image = image_name
 
     def get_image(self):
         return self._image.copy()
+
+    def get_image_name(self):
+        return self._current_image_name
 
     def set_image(self, image_name, from_database=True):
         if from_database:
