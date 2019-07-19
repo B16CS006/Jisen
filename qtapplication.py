@@ -5,9 +5,9 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QGridLayout, QLabel, QCheckBox, QPushButton, QSlider, QHBoxLayout, \
-    QDialog, QLineEdit, QDialogButtonBox
+    QDialog, QLineEdit, QDialogButtonBox, QMessageBox
 
-import application
+import application, excelHandler
 
 
 # noinspection PyAttributeOutsideInit
@@ -16,6 +16,8 @@ class Window(QtWidgets.QWidget, application.Application):
     def __init__(self):
         super(Window, self).__init__()
         application.Application.__init__(self, 'database')
+
+        self._excelHandler = excelHandler.ExcelHandler()
 
         self.boxes_visibility = True
         self.ctrl_pressed = False
@@ -250,6 +252,9 @@ class Window(QtWidgets.QWidget, application.Application):
         self.dialog.setWindowTitle('Correct if incorrect')
         self.dialog.exec_()
 
+    def ui_message_dialog(self, title, message):
+         QMessageBox.about(self, str(title), str(message))
+
     def keyPressEvent(self, q_key_event):
         if q_key_event.key() == Qt.Key_W:
             self.dec_box_height()
@@ -345,10 +350,32 @@ class Window(QtWidgets.QWidget, application.Application):
             self.wants_to_confirm_reads = False
 
     def read_images(self):
+
+        import glob
+
+        images = [image for image in glob.glob('database/images/*')]
+        # print(images)
+
+        for image in images:
+            self.image_handler.set_image(image, False)
+            self.set_image()
+            self.read_image()
+
+        self._excelHandler.save_workbook('database/default2.xls')
+        self.ui_message_dialog('Message', 'Complete')
+
+    def read_image(self):
         self._read_box_images()
         if self.wants_to_confirm_reads:
             self.ui_correct_if_incorrect_dialog()
-        print(self.values)
+        # print(self.values)
+        values = {
+            'name': self.values[1],
+            'index': self.values[2].split('/')[0],
+            'order': self.values[3],
+            'santoor': self.values[4]
+        }
+        self._excelHandler.update_excel_file(values)
 
     def update_read_image_value(self):
         self.dialog.close()
